@@ -1,0 +1,3 @@
+[submodule "libSekura"]
+	path = libSekura
+	url = git@github.com:JupiterSoft/libSekura.git
