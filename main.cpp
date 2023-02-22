@@ -6,11 +6,12 @@
 #include "sdk_mainwindow.h"
 
 #include <QApplication>
+#include <Sekura>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    SDK_MainWindow w;
+    sekura_init_resources();
+    Sekura::SDK_MainWindow w;
     w.show();
     return a.exec();
 }

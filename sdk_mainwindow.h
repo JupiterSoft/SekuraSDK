@@ -7,20 +7,32 @@
 #define SDK_MAINWINDOW_H
 
 #include <QMainWindow>
+#include <RestSettings>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class SDK_MainWindow; }
-QT_END_NAMESPACE
+namespace Sekura {
 
-class SDK_MainWindow : public QMainWindow
-{
-    Q_OBJECT
+    QT_BEGIN_NAMESPACE
+    namespace Ui {
+        class SDK_MainWindow;
+    }
+    QT_END_NAMESPACE
 
-public:
-    SDK_MainWindow(QWidget *parent = nullptr);
-    ~SDK_MainWindow();
+    class SDK_MainWindow : public QMainWindow {
+        Q_OBJECT
 
-private:
-    Ui::SDK_MainWindow *ui;
-};
+      public:
+        SDK_MainWindow(QWidget *parent = nullptr);
+        ~SDK_MainWindow();
+
+      private:
+        Ui::SDK_MainWindow *ui;
+
+        RestSettings *m_settings;
+        bool m_authorized;
+
+        void start();
+        void createActions();
+    };
+
+} // namespace Sekura
 #endif // SDK_MAINWINDOW_H
