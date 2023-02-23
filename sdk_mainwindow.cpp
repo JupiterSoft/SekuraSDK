@@ -10,6 +10,7 @@
 #include <QMdiSubWindow>
 #include <QTimer>
 #include <TableWidget>
+#include <TreeWidget>
 
 using namespace Sekura;
 
@@ -93,11 +94,28 @@ void SDK_MainWindow::createActions() {
         w->show();
     });
     menu->addAction(action);
+    action = new QAction(tr("Menus"));
+    connect(action, &QAction::triggered, this, [this]() {
+        QVariantMap map;
+        map["title"] = tr("Menus");
+        map["model"] = "a_menus";
+        TreeWidget *child = new TreeWidget(map, m_settings, this);
+        connect(child, &TreeWidget::appendWidget, this, [this](QWidget *child) {
+            QMdiSubWindow *w = ui->mdiArea->addSubWindow(child);
+            w->setAttribute(Qt::WA_DeleteOnClose);
+            w->showMaximized();
+        });
+        QMdiSubWindow *w = ui->mdiArea->addSubWindow(child);
+        w->setAttribute(Qt::WA_DeleteOnClose);
+        w->show();
+    });
+    menu->addAction(action);
     action = new QAction(tr("Tables"));
     connect(action, &QAction::triggered, this, [this]() {
         QVariantMap map;
         map["title"] = tr("Tables");
         map["model"] = "a_tables";
+
         TableWidget *child = new TableWidget(map, m_settings, this);
         connect(child, &TableWidget::appendWidget, this, [this](QWidget *child) {
             QMdiSubWindow *w = ui->mdiArea->addSubWindow(child);
