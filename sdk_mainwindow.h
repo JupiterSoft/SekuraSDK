@@ -8,6 +8,7 @@
 
 #include <QMainWindow>
 #include <RestSettings>
+#include <TreeModel>
 
 namespace Sekura {
 

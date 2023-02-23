@@ -7,6 +7,7 @@
 #include "./ui_sdk_mainwindow.h"
 
 #include <AuthDialog>
+#include <Menu>
 #include <QMdiSubWindow>
 #include <QTimer>
 #include <TableWidget>
@@ -53,12 +54,25 @@ SDK_MainWindow::SDK_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui
     } else
         start();
 
-    createActions();
+    // createActions();
 }
 
 SDK_MainWindow::~SDK_MainWindow() { delete ui; }
 
-void SDK_MainWindow::start() {}
+void SDK_MainWindow::start() {
+    Menu *menu = Interface::createMenu(ui->menubar, m_settings, this);
+    connect(menu, &Menu::childCreated, this, [this](BaseWidget *widget) {
+        widget->setParent(this);
+        connect(widget, &BaseWidget::appendWidget, this, [this](QWidget *child) {
+            QMdiSubWindow *w = ui->mdiArea->addSubWindow(child);
+            w->setAttribute(Qt::WA_DeleteOnClose);
+            w->showMaximized();
+        });
+        QMdiSubWindow *w = ui->mdiArea->addSubWindow(widget);
+        w->setAttribute(Qt::WA_DeleteOnClose);
+        w->show();
+    });
+}
 
 void SDK_MainWindow::createActions() {
     QMenu *menu = ui->menubar->addMenu(tr("System"));
