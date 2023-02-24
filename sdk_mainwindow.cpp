@@ -59,19 +59,20 @@ SDK_MainWindow::SDK_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui
 
 SDK_MainWindow::~SDK_MainWindow() { delete ui; }
 
-void SDK_MainWindow::start() {
-    Menu *menu = Interface::createMenu(ui->menubar, m_settings, this);
-    connect(menu, &Menu::childCreated, this, [this](BaseWidget *widget) {
-        widget->setParent(this);
-        connect(widget, &BaseWidget::appendWidget, this, [this](QWidget *child) {
-            QMdiSubWindow *w = ui->mdiArea->addSubWindow(child);
-            w->setAttribute(Qt::WA_DeleteOnClose);
-            w->showMaximized();
-        });
+void SDK_MainWindow::appendWidget(BaseWidget *widget) {
+    widget->setParent(this);
+    QTimer::singleShot(100, [this, widget]() {
         QMdiSubWindow *w = ui->mdiArea->addSubWindow(widget);
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
+        connect(widget, &BaseWidget::appendWidget, this, &SDK_MainWindow::appendWidget);
+        connect(widget, &BaseWidget::closeParent, w, &QMdiSubWindow::close);
     });
+}
+
+void SDK_MainWindow::start() {
+    Menu *menu = Interface::createMenu(ui->menubar, m_settings, this);
+    connect(menu, &Menu::childCreated, this, &SDK_MainWindow::appendWidget);
 }
 
 void SDK_MainWindow::createActions() {

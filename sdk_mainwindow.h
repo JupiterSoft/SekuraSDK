@@ -25,6 +25,9 @@ namespace Sekura {
         SDK_MainWindow(QWidget *parent = nullptr);
         ~SDK_MainWindow();
 
+      public slots:
+        void appendWidget(Sekura::BaseWidget *widget);
+
       private:
         Ui::SDK_MainWindow *ui;
 
