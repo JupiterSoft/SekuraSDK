@@ -17,6 +17,7 @@ using namespace Sekura;
 
 SDK_MainWindow::SDK_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::SDK_MainWindow) {
     ui->setupUi(this);
+    ui->mdiArea->setActivationOrder(QMdiArea::ActivationHistoryOrder);
     m_settings = new RestSettings(this);
 
     if (!m_settings->load("SekuraSDK")) {
