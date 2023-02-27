@@ -3,39 +3,43 @@
  * Author: Akhat T. Kuangaliyev
  * Company: Jupiter Soft
  */
-#ifndef SDK_MAINWINDOW_H
-#define SDK_MAINWINDOW_H
+#ifndef CRM_MAINWINDOW_H
+#define CRM_MAINWINDOW_H
 
+#include <QJsonObject>
 #include <QMainWindow>
-#include <RestSettings>
-#include <TreeModel>
+#include <Sekura>
 
 namespace Sekura {
 
     QT_BEGIN_NAMESPACE
     namespace Ui {
-        class SDK_MainWindow;
+        class CRM_MainWindow;
     }
     QT_END_NAMESPACE
 
-    class SDK_MainWindow : public QMainWindow {
+    class CRM_MainWindow : public QMainWindow {
         Q_OBJECT
 
       public:
-        SDK_MainWindow(QWidget *parent = nullptr);
-        ~SDK_MainWindow();
+        CRM_MainWindow(QWidget *parent = nullptr);
+        ~CRM_MainWindow();
+
+        static RestSettings *settings();
 
       public slots:
         void appendWidget(Sekura::BaseWidget *widget);
 
       private:
-        Ui::SDK_MainWindow *ui;
-
+        Ui::CRM_MainWindow *ui;
         RestSettings *m_settings;
         bool m_authorized;
 
+        static RestSettings *_global_settings;
+
         void start();
+        void createActions();
     };
 
 } // namespace Sekura
-#endif // SDK_MAINWINDOW_H
+#endif // CRM_MAINWINDOW_H

@@ -3,35 +3,38 @@
  * Author: Akhat T. Kuangaliyev
  * Company: Jupiter Soft
  */
-#include "sdk_mainwindow.h"
-#include "./ui_sdk_mainwindow.h"
+#include "crm_mainwindow.h"
+#include "./ui_crm_mainwindow.h"
 
 #include <AuthDialog>
+#include <BaseWidget>
 #include <Menu>
 #include <QMdiSubWindow>
 #include <QTimer>
-#include <TableWidget>
-#include <TreeWidget>
+#include <RestSettings>
 
 using namespace Sekura;
 
-SDK_MainWindow::SDK_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::SDK_MainWindow) {
-    ui->setupUi(this);
-    ui->mdiArea->setActivationOrder(QMdiArea::ActivationHistoryOrder);
-    m_settings = new RestSettings(this);
+RestSettings *CRM_MainWindow::_global_settings = nullptr;
 
-    if (!m_settings->load("SekuraSDK")) {
+CRM_MainWindow::CRM_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::CRM_MainWindow) {
+    ui->setupUi(this);
+    m_settings = new RestSettings(this);
+    if (_global_settings == nullptr) {
+        _global_settings = m_settings;
+    }
+    if (!m_settings->load("SekuraCRM")) {
         QByteArrayMap headers;
         headers["Content-Type"] = "application/json";
         headers["charset"] = "utf-8";
-        headers["sekura-application"] = "9df49aec-ad3f-11ed-b1da-d00da1480190";
+        headers["sekura-application"] = "d8660fea-b667-11ed-8bdd-e6ece5f4476b";
         m_settings->setHeaders(headers);
         m_settings->setPath("http://localhost:8081/sekura/api/v1.0");
-        m_settings->save("SekuraSDK");
+        m_settings->save("SekuraCRM");
         m_authorized = false;
     } else {
         m_settings->setPath("http://localhost:8081/sekura/api/v1.0");
-        m_settings->save("SekuraSDK");
+        m_settings->save("SekuraCRM");
         if (m_settings->headers().contains("Authorization")) {
             m_authorized = true;
         }
@@ -48,30 +51,40 @@ SDK_MainWindow::SDK_MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui
             });
             connect(dialog, &AuthDialog::rejected, this, [this]() {
                 qDebug() << "Rejected";
-                QTimer::singleShot(100, this, &SDK_MainWindow::close);
+                QTimer::singleShot(100, this, &CRM_MainWindow::close);
             });
             dialog->exec();
         });
     } else
         start();
 
-    // createActions();
+    createActions();
 }
 
-SDK_MainWindow::~SDK_MainWindow() { delete ui; }
+CRM_MainWindow::~CRM_MainWindow() {
+    delete ui;
+    if (_global_settings == m_settings) {
+        _global_settings = nullptr;
+    }
+    delete m_settings;
+}
 
-void SDK_MainWindow::appendWidget(BaseWidget *widget) {
+RestSettings *CRM_MainWindow::settings() { return _global_settings; }
+
+void CRM_MainWindow::appendWidget(BaseWidget *widget) {
     widget->setParent(this);
     QTimer::singleShot(100, [this, widget]() {
         QMdiSubWindow *w = ui->mdiArea->addSubWindow(widget);
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
-        connect(widget, &BaseWidget::appendWidget, this, &SDK_MainWindow::appendWidget);
+        connect(widget, &BaseWidget::appendWidget, this, &CRM_MainWindow::appendWidget);
         connect(widget, &BaseWidget::closeParent, w, &QMdiSubWindow::close);
     });
 }
 
-void SDK_MainWindow::start() {
+void CRM_MainWindow::start() {
     Menu *menu = Interface::createMenu(ui->menubar, m_settings, this);
-    connect(menu, &Menu::childCreated, this, &SDK_MainWindow::appendWidget);
+    connect(menu, &Menu::childCreated, this, &CRM_MainWindow::appendWidget);
 }
+
+void CRM_MainWindow::createActions() {}
