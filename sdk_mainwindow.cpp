@@ -62,7 +62,7 @@ SDK_MainWindow::~SDK_MainWindow() { delete ui; }
 
 void SDK_MainWindow::appendWidget(BaseWidget *widget) {
     widget->setParent(this);
-    QTimer::singleShot(100, [this, widget]() {
+    QTimer::singleShot(100, this, [this, widget]() {
         QMdiSubWindow *w = ui->mdiArea->addSubWindow(widget);
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
@@ -72,6 +72,7 @@ void SDK_MainWindow::appendWidget(BaseWidget *widget) {
 }
 
 void SDK_MainWindow::start() {
-    Menu *menu = Interface::createMenu(ui->menubar, m_settings, this);
+    Sekura::Interface::setSettings(m_settings);
+    Menu *menu = Interface::createMenu(ui->menubar, this);
     connect(menu, &Menu::childCreated, this, &SDK_MainWindow::appendWidget);
 }
