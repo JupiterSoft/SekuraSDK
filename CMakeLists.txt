@@ -17,15 +17,22 @@ include_directories(libSekura)
 
 set(PROJECT_SOURCES
         main.cpp
-        sdk_mainwindow.cpp
-        sdk_mainwindow.h
-        sdk_mainwindow.ui
-)
+    )
+
+if(APPLE)
+  set(MACOSX_BUNDLE_ICON_FILE sekura.icns)
+  set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/images/sekura.icns")
+  set_source_files_properties(${app_icon_macos}
+                              PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+elseif(WIN32)
+  set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/images/resource.rc")
+endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(SekuraSDK
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ${app_icon_macos}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET SekuraSDK APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -45,6 +52,7 @@ else()
     endif()
 endif()
 
+
 target_link_libraries(SekuraSDK PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network libSekura)
 
 set_target_properties(SekuraSDK PROPERTIES
@@ -61,54 +69,4 @@ install(TARGETS SekuraSDK
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(SekuraSDK)
-endif()
-
-
-
-set(PROJECT_SOURCES_CRM
-        crm/main.cpp
-        crm/crm_mainwindow.cpp
-        crm/crm_mainwindow.h
-        crm/crm_mainwindow.ui
-)
-
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(SekuraCRM
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES_CRM}
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET SekuraSDK APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(SekuraCRM SHARED
-            ${PROJECT_SOURCES_CRM}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(SekuraCRM
-            ${PROJECT_SOURCES_CRM}
-        )
-    endif()
-endif()
-
-target_link_libraries(SekuraCRM PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network libSekura)
-
-set_target_properties(SekuraSDK PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER crm.jupitersoft.kz
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
-
-install(TARGETS SekuraCRM
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(SekuraCRM)
 endif()
