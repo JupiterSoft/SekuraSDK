@@ -5,6 +5,7 @@
  */
 // #include "sdk_mainwindow.h"
 
+#include <AuthWidget>
 #include <MainWindow>
 #include <QApplication>
 #include <QCommandLineParser>
@@ -40,6 +41,9 @@ int main(int argc, char *argv[]) {
     sekura_init_resources();
 
     if (parse.isSet(startAuth)) {
+        Sekura::AuthWidget w2;
+        w2.show();
+        return a.exec();
     } else if (parse.isSet(startWidget)) {
         Sekura::appObject obj(data_conf);
         if (obj.isError())
