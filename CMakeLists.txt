@@ -15,9 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 add_subdirectory(libSekura)
 include_directories(libSekura)
 
-set(PROJECT_SOURCES
-        main.cpp
-    )
+set(PROJECT_SOURCES main.cpp systemcommandform.h systemcommandform.cpp systemcommandform.ui)
 
 if(APPLE)
   set(MACOSX_BUNDLE_ICON_FILE sekura.icns)
