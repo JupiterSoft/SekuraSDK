@@ -23,10 +23,17 @@ class SystemCommandForm : public QWidget {
 
   public slots:
 
+    void success(const QJsonObject &obj);
+    void error(const QJsonObject &obj);
+    void pbCommands();
+    void pbSend();
+
   private:
     Ui::SystemCommandForm *ui;
     Sekura::RestSettings *m_settings;
     Sekura::RestClient *m_client;
+    QString m_systemKey;
+    QString m_fileName;
 };
 
 #endif // SYSTEMCOMMANDFORM_H

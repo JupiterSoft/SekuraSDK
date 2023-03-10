@@ -5,6 +5,8 @@
  */
 // #include "sdk_mainwindow.h"
 
+#include "systemcommandform.h"
+
 #include <AuthWidget>
 #include <MainWindow>
 #include <QApplication>
@@ -32,6 +34,10 @@ int main(int argc, char *argv[]) {
                                                  << "widget",
                                    "load widget <file_name>", "file_name");
     parse.addOption(startWidget);
+    QCommandLineOption systemWidget(QStringList() << "s"
+                                                  << "system",
+                                    "system <password>", "password");
+    parse.addOption(systemWidget);
     parse.process(a);
 
     QString data_conf = "Default";
@@ -51,6 +57,10 @@ int main(int argc, char *argv[]) {
         Sekura::BaseWidget *ptr = obj.loadFromFile(parse.value(startWidget));
         if (ptr != nullptr)
             obj.startWidget(ptr);
+        return a.exec();
+    } else if (parse.isSet(systemWidget)) {
+        SystemCommandForm form(parse.value(systemWidget));
+        form.show();
         return a.exec();
     }
 
