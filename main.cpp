@@ -5,14 +5,13 @@
  */
 // #include "sdk_mainwindow.h"
 
-#include "systemcommandform.h"
-
 #include <AuthWidget>
 #include <MainWindow>
 #include <QApplication>
 #include <QCommandLineParser>
 #include <Sekura>
-#include <appobject.h>
+#include <SystemCommandWidget>
+#include <appObject>
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
@@ -45,28 +44,31 @@ int main(int argc, char *argv[]) {
         data_conf = parse.value(conf);
     }
     sekura_init_resources();
+    Sekura::RestSettings settings;
+    Sekura::Interface::setSettings(&settings);
 
     if (parse.isSet(startAuth)) {
         Sekura::AuthWidget w2;
         w2.show();
         return a.exec();
     } else if (parse.isSet(startWidget)) {
-        Sekura::appObject obj(data_conf);
-        if (obj.isError())
+        if (!settings.load(data_conf))
             return -1;
+        Sekura::appObject obj;
         Sekura::BaseWidget *ptr = obj.loadFromFile(parse.value(startWidget));
         if (ptr != nullptr)
             obj.startWidget(ptr);
         return a.exec();
     } else if (parse.isSet(systemWidget)) {
-        SystemCommandForm form(parse.value(systemWidget));
+        Sekura::SystemCommandWidget form(parse.value(systemWidget));
         form.show();
         return a.exec();
     }
 
-    Sekura::MainWindow w(data_conf);
-    if (w.isError())
+    if (!settings.load(data_conf))
         return -1;
+
+    Sekura::MainWindow w;
     w.show();
 
     return a.exec();
