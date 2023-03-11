@@ -6,6 +6,7 @@
 // #include "sdk_mainwindow.h"
 
 #include <AuthWidget>
+#include <CryptSettings>
 #include <MainWindow>
 #include <QApplication>
 #include <QCommandLineParser>
@@ -44,7 +45,8 @@ int main(int argc, char *argv[]) {
         data_conf = parse.value(conf);
     }
     sekura_init_resources();
-    Sekura::RestSettings settings;
+    Sekura::CryptSettings settings;
+    settings.setPubKey("default-password");
     Sekura::Interface::setSettings(&settings);
 
     if (parse.isSet(startAuth)) {
